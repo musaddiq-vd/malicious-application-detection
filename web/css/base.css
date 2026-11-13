@@ -1,0 +1,278 @@
+/* Design tokens, reset and typography. Every colour, space and radius used
+   elsewhere comes from a custom property defined here. */
+
+:root {
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.8125rem;
+  --fs-md: 0.9375rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 2rem;
+  --fs-3xl: 2.75rem;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-full: 999px;
+
+  --sidebar-w: 248px;
+  --topbar-h: 56px;
+  --tabbar-h: 60px;
+  --content-max: 1240px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-fast: 120ms;
+  --t-med: 220ms;
+}
+
+/* Dark is the default identity: a calm, low-glare console. */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0a0e12;
+  --bg-grid: rgba(255, 255, 255, 0.028);
+  --surface: #10161c;
+  --surface-2: #161d25;
+  --surface-3: #1d2630;
+  --border: #212b35;
+  --border-strong: #303d4a;
+  --text: #e7edf2;
+  --text-2: #a0adb9;
+  --text-3: #6d7a87;
+  --accent: #5ad1e6;
+  --accent-strong: #7fdcee;
+  --accent-ink: #03222a;
+  --mal: #ff6b4a;
+  --ben: #35c9a2;
+  --warn: #f2b84b;
+  --high: #ff9640;
+  --on-solid: #0a0e12;
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset, 0 12px 32px -16px rgba(0, 0, 0, 0.7);
+  --shadow-pop: 0 18px 48px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px var(--border-strong);
+  --scrim: rgba(4, 7, 10, 0.72);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f3f5f7;
+  --bg-grid: rgba(15, 23, 32, 0.045);
+  --surface: #ffffff;
+  --surface-2: #f3f5f7;
+  --surface-3: #e8ecf0;
+  --border: #dfe4ea;
+  --border-strong: #c5cdd6;
+  --text: #0f1720;
+  --text-2: #465463;
+  --text-3: #6c7986;
+  --accent: #0a7b93;
+  --accent-strong: #086478;
+  --accent-ink: #ffffff;
+  --mal: #c93d1b;
+  --ben: #0a8566;
+  --warn: #9a6400;
+  --high: #b85800;
+  --on-solid: #ffffff;
+  --shadow: 0 1px 2px rgba(15, 23, 32, 0.05), 0 8px 24px -16px rgba(15, 23, 32, 0.18);
+  --shadow-pop: 0 18px 48px -12px rgba(15, 23, 32, 0.28), 0 0 0 1px var(--border);
+  --scrim: rgba(15, 23, 32, 0.45);
+}
+
+:root {
+  --accent-soft: color-mix(in srgb, var(--accent) 13%, transparent);
+  --mal-soft: color-mix(in srgb, var(--mal) 13%, transparent);
+  --ben-soft: color-mix(in srgb, var(--ben) 13%, transparent);
+  --warn-soft: color-mix(in srgb, var(--warn) 15%, transparent);
+  --high-soft: color-mix(in srgb, var(--high) 14%, transparent);
+  --focus: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-md);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure {
+  margin: 0;
+}
+
+ul, ol {
+  padding: 0;
+  list-style: none;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-strong);
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+svg {
+  display: block;
+}
+
+code, kbd, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: var(--r-sm);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--s-2);
+  left: var(--s-2);
+  z-index: 100;
+  padding: var(--s-2) var(--s-4);
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-radius: var(--r-sm);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+  color: var(--accent-ink);
+}
+
+.noscript {
+  padding: var(--s-6);
+  text-align: center;
+}
+
+/* Small mono caps label: the recurring "console" accent in the type system. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.muted {
+  color: var(--text-2);
+}
+
+.faint {
+  color: var(--text-3);
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,1040 @@
+{
+  "trained_at": "2026-11-13T15:22:19Z",
+  "sklearn_version": "1.9.1",
+  "dataset": {
+    "rows_raw": 6802,
+    "rows_unique": 1107,
+    "duplicates_removed": 5695,
+    "n_features": 35,
+    "class_balance_raw": {
+      "benign": 4873,
+      "malicious": 1929
+    },
+    "class_balance_unique": {
+      "benign": 773,
+      "malicious": 295
+    },
+    "unique_feature_vectors": 1071,
+    "conflicting_label_groups": 36,
+    "conflicts_resolved_by_majority": 33,
+    "conflicts_dropped_as_ties": 3,
+    "rows_modeling": 1068,
+    "feature_prevalence": [
+      {
+        "slug": "telephony_get_device_id",
+        "label": "Reads device ID (IMEI)",
+        "category": "api_call",
+        "benign_rate": 0.25097024579560157,
+        "malicious_rate": 0.7966101694915254
+      },
+      {
+        "slug": "telephony_get_subscriber_id",
+        "label": "Reads subscriber ID (IMSI)",
+        "category": "api_call",
+        "benign_rate": 0.12677878395860284,
+        "malicious_rate": 0.6033898305084746
+      },
+      {
+        "slug": "abort_broadcast",
+        "label": "Suppresses broadcasts (abortBroadcast)",
+        "category": "api_call",
+        "benign_rate": 0.04657179818887452,
+        "malicious_rate": 0.33559322033898303
+      },
+      {
+        "slug": "send_sms",
+        "label": "Can send SMS",
+        "category": "permission",
+        "benign_rate": 0.0815006468305304,
+        "malicious_rate": 0.5525423728813559
+      },
+      {
+        "slug": "delete_packages",
+        "label": "Can uninstall other apps",
+        "category": "permission",
+        "benign_rate": 0.04398447606727038,
+        "malicious_rate": 0.04406779661016949
+      },
+      {
+        "slug": "read_phone_state",
+        "label": "Reads phone state and identity",
+        "category": "permission",
+        "benign_rate": 0.6157826649417852,
+        "malicious_rate": 0.8983050847457628
+      },
+      {
+        "slug": "receive_sms",
+        "label": "Can intercept incoming SMS",
+        "category": "permission",
+        "benign_rate": 0.10996119016817593,
+        "malicious_rate": 0.4576271186440678
+      },
+      {
+        "slug": "inet_socket_address",
+        "label": "Opens raw network sockets",
+        "category": "api_call",
+        "benign_rate": 0.00646830530401035,
+        "malicious_rate": 0.31864406779661014
+      },
+      {
+        "slug": "read_sms",
+        "label": "Can read stored SMS",
+        "category": "permission",
+        "benign_rate": 0.1630012936610608,
+        "malicious_rate": 0.46440677966101696
+      },
+      {
+        "slug": "boot_completed",
+        "label": "Starts automatically at boot",
+        "category": "intent",
+        "benign_rate": 0.4307891332470893,
+        "malicious_rate": 0.6576271186440678
+      },
+      {
+        "slug": "file_delete",
+        "label": "Deletes files",
+        "category": "api_call",
+        "benign_rate": 0.517464424320828,
+        "malicious_rate": 0.6508474576271186
+      },
+      {
+        "slug": "chown",
+        "label": "Uses chown command",
+        "category": "command",
+        "benign_rate": 0.01164294954721863,
+        "malicious_rate": 0.0576271186440678
+      },
+      {
+        "slug": "chmod",
+        "label": "Uses chmod command",
+        "category": "command",
+        "benign_rate": 0.10608020698576973,
+        "malicious_rate": 0.2033898305084746
+      },
+      {
+        "slug": "mount",
+        "label": "Uses mount command",
+        "category": "command",
+        "benign_rate": 0.1203104786545925,
+        "malicious_rate": 0.16271186440677965
+      },
+      {
+        "slug": "ref_apk",
+        "label": "References APK files",
+        "category": "file_artifact",
+        "benign_rate": 0.3298835705045278,
+        "malicious_rate": 0.4
+      },
+      {
+        "slug": "ref_zip",
+        "label": "References ZIP archives",
+        "category": "file_artifact",
+        "benign_rate": 0.03622250970245795,
+        "malicious_rate": 0.04406779661016949
+      },
+      {
+        "slug": "ref_dex",
+        "label": "References DEX bytecode files",
+        "category": "file_artifact",
+        "benign_rate": 0.007761966364812419,
+        "malicious_rate": 0.006779661016949152
+      },
+      {
+        "slug": "camera",
+        "label": "Can use the camera",
+        "category": "permission",
+        "benign_rate": 0.18499353169469598,
+        "malicious_rate": 0.18305084745762712
+      },
+      {
+        "slug": "access_fine_location",
+        "label": "Can read precise GPS location",
+        "category": "permission",
+        "benign_rate": 0.2833117723156533,
+        "malicious_rate": 0.34915254237288135
+      },
+      {
+        "slug": "install_packages",
+        "label": "Can silently install apps",
+        "category": "permission",
+        "benign_rate": 0.06597671410090557,
+        "malicious_rate": 0.15593220338983052
+      },
+      {
+        "slug": "battery_low",
+        "label": "Reacts to low battery",
+        "category": "intent",
+        "benign_rate": 0.009055627425614488,
+        "malicious_rate": 0.023728813559322035
+      },
+      {
+        "slug": "ref_so",
+        "label": "References native libraries (.so)",
+        "category": "file_artifact",
+        "benign_rate": 0.278137128072445,
+        "malicious_rate": 0.3525423728813559
+      },
+      {
+        "slug": "power_connected",
+        "label": "Reacts to charger being connected",
+        "category": "intent",
+        "benign_rate": 0.06597671410090557,
+        "malicious_rate": 0.07796610169491526
+      },
+      {
+        "slug": "load_library",
+        "label": "Loads native code (System.loadLibrary)",
+        "category": "api_call",
+        "benign_rate": 0.3117723156532988,
+        "malicious_rate": 0.3016949152542373
+      },
+      {
+        "slug": "ref_exe",
+        "label": "References Windows executables (.exe)",
+        "category": "file_artifact",
+        "benign_rate": 0.0,
+        "malicious_rate": 0.0
+      },
+      {
+        "slug": "access_network_state",
+        "label": "Checks network connectivity",
+        "category": "permission",
+        "benign_rate": 0.6416558861578266,
+        "malicious_rate": 0.7491525423728813
+      },
+      {
+        "slug": "bluetooth",
+        "label": "Can use Bluetooth",
+        "category": "permission",
+        "benign_rate": 0.23673997412677877,
+        "malicious_rate": 0.10847457627118644
+      },
+      {
+        "slug": "access_wifi_state",
+        "label": "Reads Wi-Fi information",
+        "category": "permission",
+        "benign_rate": 0.4126778783958603,
+        "malicious_rate": 0.5152542372881356
+      },
+      {
+        "slug": "broadcast_sms",
+        "label": "Can forge SMS-received broadcasts",
+        "category": "permission",
+        "benign_rate": 0.027166882276843468,
+        "malicious_rate": 0.03389830508474576
+      },
+      {
+        "slug": "call_phone",
+        "label": "Can place phone calls",
+        "category": "permission",
+        "benign_rate": 0.16946959896507116,
+        "malicious_rate": 0.3423728813559322
+      },
+      {
+        "slug": "call_privileged",
+        "label": "Can call any number, including emergency",
+        "category": "permission",
+        "benign_rate": 0.06080206985769728,
+        "malicious_rate": 0.003389830508474576
+      },
+      {
+        "slug": "clear_app_cache",
+        "label": "Can clear all app caches",
+        "category": "permission",
+        "benign_rate": 0.01164294954721863,
+        "malicious_rate": 0.04406779661016949
+      },
+      {
+        "slug": "clear_app_user_data",
+        "label": "Can wipe other apps' data",
+        "category": "permission",
+        "benign_rate": 0.03880983182406209,
+        "malicious_rate": 0.01694915254237288
+      },
+      {
+        "slug": "control_location_updates",
+        "label": "Can control location update reporting",
+        "category": "permission",
+        "benign_rate": 0.00258732212160414,
+        "malicious_rate": 0.0
+      },
+      {
+        "slug": "internet",
+        "label": "Has internet access",
+        "category": "permission",
+        "benign_rate": 0.7464424320827943,
+        "malicious_rate": 0.9525423728813559
+      }
+    ]
+  },
+  "split": {
+    "strategy": "Exact duplicates removed first, then a stratified 80/20 train/test split; stratified 5-fold cross-validation on the training portion",
+    "train_rows": 854,
+    "test_rows": 214,
+    "cv_folds": 5,
+    "random_state": 42
+  },
+  "best_model": "Random Forest",
+  "threshold": 0.36,
+  "selection": {
+    "criterion": "Highest mean cross-validated ROC AUC (ties broken by F1)",
+    "threshold_rule": "Maximises F2 on out-of-fold calibrated probabilities from the training portion, searched over 0.30-0.70",
+    "calibration": "Sigmoid (Platt) scaling with 5-fold cross-validation"
+  },
+  "models": [
+    {
+      "name": "Logistic Regression",
+      "params": {
+        "C": 10.0
+      },
+      "cv": {
+        "accuracy_mean": 0.8957757137942896,
+        "accuracy_std": 0.008704704733797638,
+        "f1_mean": 0.8052171118746273,
+        "f1_std": 0.015841947451181213,
+        "roc_auc_mean": 0.9434738241514193,
+        "roc_auc_std": 0.020207505089742735
+      },
+      "test": {
+        "accuracy": 0.9065420560747663,
+        "precision": 0.819672131147541,
+        "recall": 0.847457627118644,
+        "f1": 0.8333333333333334,
+        "roc_auc": 0.9533078184800438,
+        "pr_auc": 0.9109705146318743
+      },
+      "threshold": 0.3,
+      "fit_seconds": 1.946
+    },
+    {
+      "name": "Linear SVM",
+      "params": {
+        "C": 0.1
+      },
+      "cv": {
+        "accuracy_mean": 0.8969453044375644,
+        "accuracy_std": 0.008877699272888544,
+        "f1_mean": 0.7962215439279539,
+        "f1_std": 0.016934765269852874,
+        "roc_auc_mean": 0.9424349416795472,
+        "roc_auc_std": 0.02059598980603369
+      },
+      "test": {
+        "accuracy": 0.9158878504672897,
+        "precision": 0.847457627118644,
+        "recall": 0.847457627118644,
+        "f1": 0.847457627118644,
+        "roc_auc": 0.9446692181519956,
+        "pr_auc": 0.8982993340927519
+      },
+      "threshold": 0.33,
+      "fit_seconds": 1.084
+    },
+    {
+      "name": "RBF SVM",
+      "params": {
+        "C": 3.0,
+        "gamma": "scale"
+      },
+      "cv": {
+        "accuracy_mean": 0.9086412108703129,
+        "accuracy_std": 0.015242865469050314,
+        "f1_mean": 0.8248595848595848,
+        "f1_std": 0.02941347084840668,
+        "roc_auc_mean": 0.9534831381258219,
+        "roc_auc_std": 0.021986632128759516
+      },
+      "test": {
+        "accuracy": 0.9158878504672897,
+        "precision": 0.847457627118644,
+        "recall": 0.847457627118644,
+        "f1": 0.847457627118644,
+        "roc_auc": 0.9492618917441225,
+        "pr_auc": 0.9184948333132049
+      },
+      "threshold": 0.31,
+      "fit_seconds": 5.487
+    },
+    {
+      "name": "Random Forest",
+      "params": {
+        "max_features": "sqrt",
+        "min_samples_leaf": 1
+      },
+      "cv": {
+        "accuracy_mean": 0.9156793945648435,
+        "accuracy_std": 0.013716726245146704,
+        "f1_mean": 0.8387198578300701,
+        "f1_std": 0.024750578779185517,
+        "roc_auc_mean": 0.9583049101338645,
+        "roc_auc_std": 0.01902062618722144
+      },
+      "test": {
+        "accuracy": 0.9252336448598131,
+        "precision": 0.8771929824561403,
+        "recall": 0.847457627118644,
+        "f1": 0.8620689655172413,
+        "roc_auc": 0.9476216511755057,
+        "pr_auc": 0.9224217489289671
+      },
+      "threshold": 0.36,
+      "fit_seconds": 33.127
+    },
+    {
+      "name": "Gradient Boosting",
+      "params": {
+        "learning_rate": 0.05,
+        "max_iter": 200,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 5
+      },
+      "cv": {
+        "accuracy_mean": 0.9086687306501549,
+        "accuracy_std": 0.01016277561895655,
+        "f1_mean": 0.8268004902540007,
+        "f1_std": 0.01690704577093555,
+        "roc_auc_mean": 0.9539009417204672,
+        "roc_auc_std": 0.02009711410544102
+      },
+      "test": {
+        "accuracy": 0.9112149532710281,
+        "precision": 0.8225806451612904,
+        "recall": 0.864406779661017,
+        "f1": 0.8429752066115702,
+        "roc_auc": 0.9611809732094041,
+        "pr_auc": 0.9297325669686686
+      },
+      "threshold": 0.33,
+      "fit_seconds": 26.8
+    },
+    {
+      "name": "Bernoulli Naive Bayes",
+      "params": {
+        "alpha": 0.01
+      },
+      "cv": {
+        "accuracy_mean": 0.8465703474372205,
+        "accuracy_std": 0.021016406506342927,
+        "f1_mean": 0.7284322560316422,
+        "f1_std": 0.037301390004355554,
+        "roc_auc_mean": 0.908368231674767,
+        "roc_auc_std": 0.012616348240620669
+      },
+      "test": {
+        "accuracy": 0.8598130841121495,
+        "precision": 0.7301587301587301,
+        "recall": 0.7796610169491526,
+        "f1": 0.7540983606557377,
+        "roc_auc": 0.8969928922908693,
+        "pr_auc": 0.8246960139180589
+      },
+      "threshold": 0.3,
+      "fit_seconds": 1.059
+    },
+    {
+      "name": "k-Nearest Neighbors",
+      "params": {
+        "n_neighbors": 9,
+        "weights": "distance"
+      },
+      "cv": {
+        "accuracy_mean": 0.8899277605779154,
+        "accuracy_std": 0.011356086419104357,
+        "f1_mean": 0.7770900175504166,
+        "f1_std": 0.02246847229530878,
+        "roc_auc_mean": 0.942325945393977,
+        "roc_auc_std": 0.018751639345155845
+      },
+      "test": {
+        "accuracy": 0.8925233644859814,
+        "precision": 0.8103448275862069,
+        "recall": 0.7966101694915254,
+        "f1": 0.8034188034188035,
+        "roc_auc": 0.9280481137233462,
+        "pr_auc": 0.8833387854658997
+      },
+      "threshold": 0.3,
+      "fit_seconds": 2.166
+    }
+  ],
+  "best": {
+    "test": {
+      "accuracy": 0.9252336448598131,
+      "precision": 0.8771929824561403,
+      "recall": 0.847457627118644,
+      "f1": 0.8620689655172413,
+      "roc_auc": 0.9476216511755057,
+      "pr_auc": 0.9224217489289671
+    },
+    "confusion_matrix": {
+      "tn": 148,
+      "fp": 7,
+      "fn": 9,
+      "tp": 50
+    },
+    "roc_curve": {
+      "fpr": [
+        0.0,
+        0.0,
+        0.0,
+        0.0064516129032258064,
+        0.0064516129032258064,
+        0.012903225806451613,
+        0.012903225806451613,
+        0.025806451612903226,
+        0.025806451612903226,
+        0.04516129032258064,
+        0.04516129032258064,
+        0.05161290322580645,
+        0.05161290322580645,
+        0.07741935483870968,
+        0.07741935483870968,
+        0.12258064516129032,
+        0.12258064516129032,
+        0.23870967741935484,
+        0.23870967741935484,
+        0.27741935483870966,
+        0.27741935483870966,
+        0.432258064516129,
+        0.432258064516129,
+        0.4645161290322581,
+        0.4645161290322581,
+        0.5161290322580645,
+        0.5161290322580645,
+        0.6451612903225806,
+        0.6451612903225806,
+        0.9161290322580645,
+        0.9290322580645162,
+        0.9354838709677419,
+        0.9483870967741935,
+        0.9548387096774194,
+        0.9806451612903225,
+        1.0
+      ],
+      "tpr": [
+        0.0,
+        0.01694915254237288,
+        0.6271186440677966,
+        0.6271186440677966,
+        0.6610169491525424,
+        0.6610169491525424,
+        0.7288135593220338,
+        0.7288135593220338,
+        0.8305084745762712,
+        0.8305084745762712,
+        0.847457627118644,
+        0.847457627118644,
+        0.864406779661017,
+        0.864406779661017,
+        0.8813559322033898,
+        0.8813559322033898,
+        0.8983050847457628,
+        0.8983050847457628,
+        0.9152542372881356,
+        0.9152542372881356,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9491525423728814,
+        0.9491525423728814,
+        0.9661016949152542,
+        0.9661016949152542,
+        0.9830508474576272,
+        0.9830508474576272,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "pr_curve": {
+      "precision": [
+        0.2757009345794392,
+        0.28502415458937197,
+        0.28921568627450983,
+        0.2935323383084577,
+        0.2964824120603015,
+        0.29949238578680204,
+        0.30412371134020616,
+        0.3072916666666667,
+        0.3105263157894737,
+        0.31382978723404253,
+        0.3172043010752688,
+        0.32065217391304346,
+        0.3241758241758242,
+        0.3277777777777778,
+        0.33146067415730335,
+        0.3352272727272727,
+        0.3390804597701149,
+        0.34502923976608185,
+        0.34911242603550297,
+        0.3532934131736527,
+        0.3575757575757576,
+        0.3619631901840491,
+        0.36645962732919257,
+        0.3710691823899371,
+        0.36942675159235666,
+        0.3741935483870968,
+        0.3790849673202614,
+        0.3841059602649007,
+        0.3918918918918919,
+        0.3972602739726027,
+        0.4027777777777778,
+        0.4084507042253521,
+        0.4142857142857143,
+        0.42028985507246375,
+        0.41911764705882354,
+        0.4253731343283582,
+        0.4318181818181818,
+        0.43846153846153846,
+        0.4375,
+        0.448,
+        0.45528455284552843,
+        0.45454545454545453,
+        0.46218487394957986,
+        0.4700854700854701,
+        0.4782608695652174,
+        0.48672566371681414,
+        0.4954954954954955,
+        0.5045871559633027,
+        0.514018691588785,
+        0.5238095238095238,
+        0.5392156862745098,
+        0.55,
+        0.5612244897959183,
+        0.5625,
+        0.574468085106383,
+        0.5869565217391305,
+        0.5888888888888889,
+        0.6022727272727273,
+        0.6162790697674418,
+        0.6309523809523809,
+        0.6463414634146342,
+        0.6708860759493671,
+        0.6883116883116883,
+        0.7066666666666667,
+        0.726027397260274,
+        0.7323943661971831,
+        0.7536231884057971,
+        0.7761194029850746,
+        0.8,
+        0.8095238095238095,
+        0.8360655737704918,
+        0.864406779661017,
+        0.875,
+        0.9074074074074074,
+        0.9230769230769231,
+        0.92,
+        0.9166666666666666,
+        0.9347826086956522,
+        0.9545454545454546,
+        0.9523809523809523,
+        0.975,
+        0.9736842105263158,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "recall": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.9830508474576272,
+        0.9830508474576272,
+        0.9830508474576272,
+        0.9830508474576272,
+        0.9830508474576272,
+        0.9830508474576272,
+        0.9830508474576272,
+        0.9830508474576272,
+        0.9830508474576272,
+        0.9830508474576272,
+        0.9661016949152542,
+        0.9661016949152542,
+        0.9661016949152542,
+        0.9661016949152542,
+        0.9491525423728814,
+        0.9491525423728814,
+        0.9491525423728814,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9322033898305084,
+        0.9152542372881356,
+        0.9152542372881356,
+        0.9152542372881356,
+        0.8983050847457628,
+        0.8983050847457628,
+        0.8983050847457628,
+        0.8983050847457628,
+        0.8983050847457628,
+        0.8983050847457628,
+        0.8983050847457628,
+        0.8983050847457628,
+        0.8983050847457628,
+        0.8813559322033898,
+        0.8813559322033898,
+        0.8813559322033898,
+        0.8813559322033898,
+        0.864406779661017,
+        0.864406779661017,
+        0.864406779661017,
+        0.8305084745762712,
+        0.8305084745762712,
+        0.8135593220338984,
+        0.7796610169491526,
+        0.7457627118644068,
+        0.7288135593220338,
+        0.711864406779661,
+        0.6779661016949152,
+        0.6610169491525424,
+        0.6271186440677966,
+        0.6101694915254238,
+        0.559322033898305,
+        0.5254237288135594,
+        0.4915254237288136,
+        0.4576271186440678,
+        0.423728813559322,
+        0.3898305084745763,
+        0.3559322033898305,
+        0.3220338983050847,
+        0.288135593220339,
+        0.2542372881355932,
+        0.22033898305084745,
+        0.1694915254237288,
+        0.13559322033898305,
+        0.1016949152542373,
+        0.06779661016949153,
+        0.03389830508474576,
+        0.0
+      ]
+    },
+    "calibration": {
+      "mean_predicted": [
+        0.02583894856329426,
+        0.027513088810993697,
+        0.03138971257274048,
+        0.0380615191668511,
+        0.06195962236481597,
+        0.21054809311128359,
+        0.7680927862215408,
+        0.9527112371125008
+      ],
+      "fraction_positive": [
+        0.0,
+        0.0,
+        0.07692307692307693,
+        0.07407407407407407,
+        0.07407407407407407,
+        0.15384615384615385,
+        0.8148148148148148,
+        1.0
+      ]
+    },
+    "feature_importance": [
+      {
+        "slug": "inet_socket_address",
+        "label": "Opens raw network sockets",
+        "category": "api_call",
+        "importance": 0.06377255330781836,
+        "std": 0.006246194593924389
+      },
+      {
+        "slug": "telephony_get_device_id",
+        "label": "Reads device ID (IMEI)",
+        "category": "api_call",
+        "importance": 0.04087479496992882,
+        "std": 0.014752993120910605
+      },
+      {
+        "slug": "send_sms",
+        "label": "Can send SMS",
+        "category": "permission",
+        "importance": 0.040820120284308314,
+        "std": 0.007340275590297536
+      },
+      {
+        "slug": "access_wifi_state",
+        "label": "Reads Wi-Fi information",
+        "category": "permission",
+        "importance": 0.01018042646254771,
+        "std": 0.0036805283035534894
+      },
+      {
+        "slug": "telephony_get_subscriber_id",
+        "label": "Reads subscriber ID (IMSI)",
+        "category": "api_call",
+        "importance": 0.008037178786221889,
+        "std": 0.00937695565286509
+      },
+      {
+        "slug": "access_network_state",
+        "label": "Checks network connectivity",
+        "category": "permission",
+        "importance": 0.0076653909240021025,
+        "std": 0.003098448732234428
+      },
+      {
+        "slug": "abort_broadcast",
+        "label": "Suppresses broadcasts (abortBroadcast)",
+        "category": "api_call",
+        "importance": 0.0075997813012574356,
+        "std": 0.0025472771149351696
+      },
+      {
+        "slug": "access_fine_location",
+        "label": "Can read precise GPS location",
+        "category": "permission",
+        "importance": 0.007413887370147565,
+        "std": 0.0014146275891784533
+      },
+      {
+        "slug": "read_phone_state",
+        "label": "Reads phone state and identity",
+        "category": "permission",
+        "importance": 0.007402952433023424,
+        "std": 0.0026488968280149227
+      },
+      {
+        "slug": "ref_apk",
+        "label": "References APK files",
+        "category": "file_artifact",
+        "importance": 0.0066703116457079385,
+        "std": 0.0030508278609026624
+      },
+      {
+        "slug": "chown",
+        "label": "Uses chown command",
+        "category": "command",
+        "importance": 0.006331328594860508,
+        "std": 0.00181562768736355
+      },
+      {
+        "slug": "boot_completed",
+        "label": "Starts automatically at boot",
+        "category": "intent",
+        "importance": 0.004166211044286427,
+        "std": 0.004004770503455432
+      },
+      {
+        "slug": "load_library",
+        "label": "Loads native code (System.loadLibrary)",
+        "category": "api_call",
+        "importance": 0.0037178786221978453,
+        "std": 0.0028036974075263277
+      },
+      {
+        "slug": "read_sms",
+        "label": "Can read stored SMS",
+        "category": "permission",
+        "importance": 0.0029414980863859074,
+        "std": 0.00667093006840214
+      },
+      {
+        "slug": "file_delete",
+        "label": "Deletes files",
+        "category": "api_call",
+        "importance": 0.0028649535265171445,
+        "std": 0.003250565251613118
+      },
+      {
+        "slug": "bluetooth",
+        "label": "Can use Bluetooth",
+        "category": "permission",
+        "importance": 0.0023947512301803475,
+        "std": 0.0029314810506052527
+      },
+      {
+        "slug": "internet",
+        "label": "Has internet access",
+        "category": "permission",
+        "importance": 0.0022307271733186806,
+        "std": 0.0024782533895242567
+      },
+      {
+        "slug": "mount",
+        "label": "Uses mount command",
+        "category": "command",
+        "importance": 0.0019682886823400025,
+        "std": 0.0014240630373843679
+      },
+      {
+        "slug": "receive_sms",
+        "label": "Can intercept incoming SMS",
+        "category": "permission",
+        "importance": 0.0019245489338435395,
+        "std": 0.007163210149370027
+      },
+      {
+        "slug": "call_phone",
+        "label": "Can place phone calls",
+        "category": "permission",
+        "importance": 0.001913613996719432,
+        "std": 0.0027326405685291952
+      },
+      {
+        "slug": "ref_so",
+        "label": "References native libraries (.so)",
+        "category": "file_artifact",
+        "importance": 0.0018370694368506802,
+        "std": 0.0029058142351366233
+      },
+      {
+        "slug": "call_privileged",
+        "label": "Can call any number, including emergency",
+        "category": "permission",
+        "importance": 0.0014980863860031834,
+        "std": 0.0008924543423833946
+      },
+      {
+        "slug": "broadcast_sms",
+        "label": "Can forge SMS-received broadcasts",
+        "category": "permission",
+        "importance": 0.000798250410060064,
+        "std": 0.0010188286951463752
+      },
+      {
+        "slug": "delete_packages",
+        "label": "Can uninstall other apps",
+        "category": "permission",
+        "importance": 0.0007763805358118158,
+        "std": 0.0011556423151760393
+      },
+      {
+        "slug": "power_connected",
+        "label": "Reacts to charger being connected",
+        "category": "intent",
+        "importance": 0.0006998359759430528,
+        "std": 0.00031767827329328395
+      },
+      {
+        "slug": "chmod",
+        "label": "Uses chmod command",
+        "category": "command",
+        "importance": 0.0006779661016948268,
+        "std": 0.003166905802026088
+      },
+      {
+        "slug": "clear_app_user_data",
+        "label": "Can wipe other apps' data",
+        "category": "permission",
+        "importance": 0.0005139420448331044,
+        "std": 0.0012108190255877614
+      },
+      {
+        "slug": "ref_dex",
+        "label": "References DEX bytecode files",
+        "category": "file_artifact",
+        "importance": 7.654455986869647e-05,
+        "std": 0.00018330294821476508
+      },
+      {
+        "slug": "battery_low",
+        "label": "Reacts to low battery",
+        "category": "intent",
+        "importance": 6.560962274462234e-05,
+        "std": 0.00014003552186838075
+      },
+      {
+        "slug": "camera",
+        "label": "Can use the camera",
+        "category": "permission",
+        "importance": 6.560962274458904e-05,
+        "std": 0.0009880246690499085
+      },
+      {
+        "slug": "ref_exe",
+        "label": "References Windows executables (.exe)",
+        "category": "file_artifact",
+        "importance": 0.0,
+        "std": 0.0
+      },
+      {
+        "slug": "control_location_updates",
+        "label": "Can control location update reporting",
+        "category": "permission",
+        "importance": 0.0,
+        "std": 0.0
+      },
+      {
+        "slug": "clear_app_cache",
+        "label": "Can clear all app caches",
+        "category": "permission",
+        "importance": -0.000524876981957434,
+        "std": 0.002163791697693739
+      },
+      {
+        "slug": "ref_zip",
+        "label": "References ZIP archives",
+        "category": "file_artifact",
+        "importance": -0.0005467468562056598,
+        "std": 0.0016605270003480035
+      },
+      {
+        "slug": "install_packages",
+        "label": "Can silently install apps",
+        "category": "permission",
+        "importance": -0.0016183706943685649,
+        "std": 0.003387642815114406
+      }
+    ]
+  },
+  "legacy_baseline": {
+    "description": "Linear SVM, 25 hand-picked features, random 80/20 split on the raw data with duplicates",
+    "reported_accuracy": 0.9595885378398237,
+    "leak_free_accuracy": 0.897196261682243,
+    "leak_free_f1": 0.8,
+    "leak_free_precision": 0.8627450980392157,
+    "leak_free_recall": 0.7457627118644068,
+    "test_rows_also_in_train_pct": 0.9441587068332109,
+    "legacy_test_rows": 1361,
+    "n_features": 25
+  }
+}
