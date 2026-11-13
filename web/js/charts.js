@@ -46,6 +46,70 @@ function niceMax(value) {
   return Math.ceil(value / step) * step;
 }
 
+/* ---------- Sparkline ---------- */
+export function sparkline(values, { label } = {}) {
+  const el = chart((width) => {
+    const height = 30;
+    const svg = svgRoot(width, height);
+    const n = values.length;
+    const max = Math.max(1, ...values);
+    const x = (i) => (n === 1 ? width / 2 : 3 + (i / (n - 1)) * (width - 6));
+    const y = (v) => height - 4 - (v / max) * (height - 9);
+    const line = values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" L");
+    svg.append(
+      s("path", { class: "spark-area", d: `M${line} L${x(n - 1).toFixed(1)},${height} L${x(0).toFixed(1)},${height} Z` }),
+      s("path", { class: "spark-line", d: `M${line}` }),
+      s("circle", { class: "spark-dot", cx: x(n - 1), cy: y(values[n - 1]), r: 3 }),
+    );
+    return svg;
+  }, { label });
+  el.classList.add("spark");
+  return el;
+}
+
+/* ---------- Donut ---------- */
+export function donut(parts, { value, caption, label }) {
+  const size = 132;
+  const stroke = 13;
+  const r = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * r;
+  const total = parts.reduce((sum, p) => sum + p.value, 0);
+  const visible = parts.filter((p) => p.value > 0);
+  // Leave a small gap between segments so adjacent colours do not touch.
+  const gap = visible.length > 1 ? stroke + 3 : 0;
+  const svg = s("svg", { viewBox: `0 0 ${size} ${size}`, "aria-hidden": "true", focusable: "false" });
+  svg.append(s("circle", { class: "donut-track", cx: size / 2, cy: size / 2, r, "stroke-width": stroke }));
+  let offset = 0;
+  const pending = [];
+  for (const part of visible) {
+    const span = (part.value / total) * circumference;
+    const length = Math.max(0.5, span - gap);
+    const seg = s("circle", {
+      class: "donut-seg",
+      cx: size / 2,
+      cy: size / 2,
+      r,
+      "stroke-width": stroke,
+      stroke: part.color,
+      "stroke-dasharray": prefersReducedMotion() ? `${length} ${circumference}` : `0 ${circumference}`,
+      "stroke-dashoffset": -(offset + gap / 2),
+    });
+    pending.push([seg, `${length} ${circumference}`]);
+    svg.append(seg);
+    offset += span;
+  }
+  // Grow the arcs on the next frame so the CSS transition has a start state.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    for (const [seg, dash] of pending) seg.setAttribute("stroke-dasharray", dash);
+  }));
+  return h(
+    "div",
+    { class: "donut", role: "img", "aria-label": label || "Chart" },
+    svg,
+    h("div", { class: "donut-center" }, h("strong", { class: "num" }, value), h("span", null, caption)),
+  );
+}
+
 /* ---------- Stacked daily activity ---------- */
 export function activityChart(byDay) {
   const days = Array.isArray(byDay) ? byDay : [];

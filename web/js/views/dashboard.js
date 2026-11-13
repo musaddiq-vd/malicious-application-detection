@@ -1,19 +1,83 @@
 // Dashboard: the user's scanning activity at a glance.
 
 import { api } from "../api.js";
-import { h, mount } from "../dom.js";
+import { h, mount, prefersReducedMotion } from "../dom.js";
 import { icon } from "../icons.js";
-import { activityChart } from "../charts.js";
+import { activityChart, donut, sparkline } from "../charts.js";
 import { int, pct, relativeTime, dateTime } from "../format.js";
 import { appCell, card, errorState, loadingBlock, pageHead, probabilityMeter, skeleton, verdictBadge } from "../ui.js";
 
-function kpi({ label, value, note, iconName, tone }) {
+/** Animate a number from zero so the tiles feel alive on load. */
+function countUp(el, target, format) {
+  if (prefersReducedMotion() || !target) {
+    el.textContent = format(target);
+    return;
+  }
+  const duration = 800;
+  const start = performance.now();
+  const tick = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - (1 - t) ** 3;
+    if (t < 1 && el.isConnected) {
+      el.textContent = format(target * eased);
+      requestAnimationFrame(tick);
+    } else {
+      el.textContent = format(target);
+    }
+  };
+  el.textContent = format(0);
+  requestAnimationFrame(tick);
+}
+
+function kpi({ label, value, format, note, iconName, tone, trend, share }) {
+  const valueEl = h("div", { class: "kpi-value num" });
+  countUp(valueEl, value || 0, format);
+  let foot = null;
+  if (trend) {
+    foot = sparkline(trend, { label: `${label} per day over the last 14 days` });
+  } else if (share !== undefined) {
+    const fill = h("span", { style: { width: "0%" } });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      fill.style.width = `${Math.round(share * 100)}%`;
+    }));
+    foot = h("div", { class: "kpi-meter", "aria-hidden": "true" }, fill);
+  }
   return h(
     "div",
     { class: `kpi ${tone ? `tone-${tone}` : ""}` },
     h("div", { class: "kpi-top" }, h("span", { class: "eyebrow" }, label), h("span", { class: "kpi-icon" }, icon(iconName))),
-    h("div", { class: "kpi-value num" }, value),
+    valueEl,
     h("div", { class: "kpi-note" }, note),
+    foot ? h("div", { class: "kpi-foot" }, foot) : null,
+  );
+}
+
+function legend(parts, total) {
+  return h(
+    "dl",
+    { class: "split-legend" },
+    parts.map((p) =>
+      h(
+        "div",
+        null,
+        h("dt", null, h("span", { class: "legend-swatch", style: { "--tone": p.color } }), p.label),
+        h("dd", { class: "num" }, int(p.value), h("span", { class: "faint" }, total ? ` · ${pct(p.value / total)}` : "")),
+      ),
+    ),
+  );
+}
+
+function verdictDonut(stats) {
+  const parts = [
+    { label: "Malicious", value: stats.malicious || 0, color: "var(--mal)" },
+    { label: "Benign", value: stats.benign || 0, color: "var(--ben)" },
+  ];
+  const total = parts[0].value + parts[1].value;
+  return h(
+    "div",
+    { class: "donut-row" },
+    donut(parts, { value: pct(stats.detection_rate), caption: "flagged", label: parts.map((p) => `${p.label}: ${p.value}`).join(", ") }),
+    legend(parts, total),
   );
 }
 
@@ -29,18 +93,7 @@ function splitBar(parts) {
         ? parts.filter((p) => p.value > 0).map((p) => h("span", { style: { flexGrow: String(p.value), "--tone": p.color }, dataset: { tip: `${p.label}: ${p.value}` } }))
         : h("span", { class: "is-empty", style: { flexGrow: "1" } }),
     ),
-    h(
-      "dl",
-      { class: "split-legend" },
-      parts.map((p) =>
-        h(
-          "div",
-          null,
-          h("dt", null, h("span", { class: "legend-swatch", style: { "--tone": p.color } }), p.label),
-          h("dd", { class: "num" }, int(p.value), h("span", { class: "faint" }, total ? ` · ${pct(p.value / total)}` : "")),
-        ),
-      ),
-    ),
+    legend(parts, total),
   );
 }
 
@@ -115,6 +168,7 @@ function filled(stats) {
   const total = stats.total_scans || 0;
   const maxIndicator = Math.max(1, ...(stats.top_indicators || []).map((i) => i.count));
   const source = stats.by_source || {};
+  const days = stats.by_day || [];
 
   return h(
     "div",
@@ -128,11 +182,11 @@ function filled(stats) {
     h(
       "div",
       { class: "kpi-grid" },
-      kpi({ label: "Total scans", value: int(total), note: "All time", iconName: "layers" }),
-      kpi({ label: "Malicious", value: int(stats.malicious), note: "Flagged by the model", iconName: "shield-alert", tone: "malicious" }),
-      kpi({ label: "Benign", value: int(stats.benign), note: "Below the threshold", iconName: "shield-check", tone: "benign" }),
-      kpi({ label: "Detection rate", value: pct(stats.detection_rate), note: "Share of scans flagged", iconName: "target" }),
-      kpi({ label: "Average risk", value: pct(stats.avg_probability), note: "Mean malicious probability", iconName: "insights" }),
+      kpi({ label: "Total scans", value: total, format: int, note: "All time", iconName: "layers", trend: days.map((d) => d.malicious + d.benign) }),
+      kpi({ label: "Malicious", value: stats.malicious, format: int, note: "Flagged by the model", iconName: "shield-alert", tone: "malicious", trend: days.map((d) => d.malicious) }),
+      kpi({ label: "Benign", value: stats.benign, format: int, note: "Below the threshold", iconName: "shield-check", tone: "benign", trend: days.map((d) => d.benign) }),
+      kpi({ label: "Detection rate", value: stats.detection_rate, format: pct, note: "Share of scans flagged", iconName: "target", tone: "high", share: stats.detection_rate || 0 }),
+      kpi({ label: "Average risk", value: stats.avg_probability, format: pct, note: "Mean malicious probability", iconName: "insights", share: stats.avg_probability || 0 }),
     ),
     h(
       "div",
@@ -153,10 +207,7 @@ function filled(stats) {
         { class: "stack" },
         card({
           title: "Verdict split",
-          body: splitBar([
-            { label: "Malicious", value: stats.malicious || 0, color: "var(--mal)" },
-            { label: "Benign", value: stats.benign || 0, color: "var(--ben)" },
-          ]),
+          body: verdictDonut(stats),
         }),
         card({
           title: "Scan source",
