@@ -108,19 +108,27 @@ export function confirmDialog({ title, message, confirmLabel = "Confirm", danger
       h("p", null, message),
       h("div", { class: "dialog-actions" }, cancel, ok),
     );
-    let result = false;
-    cancel.addEventListener("click", () => dialog.close());
-    ok.addEventListener("click", () => {
-      result = true;
-      dialog.close();
-    });
-    dialog.addEventListener("click", (e) => {
-      if (e.target === dialog) dialog.close();
-    });
-    dialog.addEventListener("close", () => {
+    // Resolve from the handlers themselves: the dialog "close" event is not
+    // delivered reliably in every embedded browser, and a lost event would
+    // leave the caller waiting forever.
+    let settled = false;
+    const finish = (result) => {
+      if (settled) return;
+      settled = true;
+      if (dialog.open) dialog.close();
       dialog.remove();
       resolve(result);
+    };
+    cancel.addEventListener("click", () => finish(false));
+    ok.addEventListener("click", () => finish(true));
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) finish(false);
     });
+    dialog.addEventListener("cancel", (e) => {
+      e.preventDefault();
+      finish(false);
+    });
+    dialog.addEventListener("close", () => finish(false));
     document.body.append(dialog);
     dialog.showModal();
     cancel.focus();

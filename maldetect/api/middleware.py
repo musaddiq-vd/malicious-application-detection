@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import HTTPException
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from maldetect import config
+
+logger = logging.getLogger("maldetect.api")
 
 APK_UPLOAD_PATH = "/api/scans/apk"
 DOCS_PATH = "/api/docs"
@@ -59,9 +63,12 @@ class SecurityHeadersMiddleware:
             await self.app(scope, receive, send)
             return
         path: str = scope["path"]
+        started = False
 
         async def send_with_headers(message: Message) -> None:
+            nonlocal started
             if message["type"] == "http.response.start":
+                started = True
                 headers = MutableHeaders(scope=message)
                 headers["X-Content-Type-Options"] = "nosniff"
                 headers["X-Frame-Options"] = "DENY"
@@ -79,7 +86,16 @@ class SecurityHeadersMiddleware:
                     headers["Cache-Control"] = "no-cache"
             await send(message)
 
-        await self.app(scope, receive, send_with_headers)
+        try:
+            await self.app(scope, receive, send_with_headers)
+        except Exception:
+            if started:
+                raise
+            # Starlette's own 500 handler sits outside this middleware, so an
+            # unhandled error would otherwise go out without security headers.
+            logger.exception("Unhandled error on %s %s", scope.get("method"), path)
+            response = JSONResponse({"detail": "Internal server error"}, status_code=500)
+            await response(scope, receive, send_with_headers)
 
 
 class BodySizeLimitMiddleware:

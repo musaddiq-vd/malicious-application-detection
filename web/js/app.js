@@ -11,6 +11,7 @@ import { newScanView } from "./views/scan-new.js";
 import { scanResultView } from "./views/scan-result.js";
 import { historyView } from "./views/history.js";
 import { insightsView } from "./views/insights.js";
+import { accountView } from "./views/account.js";
 
 const state = {
   user: null,
@@ -25,6 +26,7 @@ const ROUTES = [
   { pattern: /^\/scans\/(\d+)$/, view: scanResultView, nav: "history", title: "Scan result" },
   { pattern: /^\/history$/, view: historyView, nav: "history", title: "History" },
   { pattern: /^\/insights$/, view: insightsView, nav: "insights", title: "Model insights" },
+  { pattern: /^\/account$/, view: accountView, nav: null, title: "Account settings" },
 ];
 
 const NAV = [
@@ -86,7 +88,7 @@ function render() {
   state.shell.setActive(route ? route.nav : null);
   state.shell.closeMenus();
 
-  const ctx = { params: route ? path.match(route.pattern).slice(1) : [], query, navigate, user: state.user, health: state.health };
+  const ctx = { params: route ? path.match(route.pattern).slice(1) : [], query, navigate, user: state.user, health: state.health, onAccountDeleted };
   setTitle(route ? route.title : "Not found");
   const page = route ? route.view(ctx) : notFoundView();
   mount(state.shell.outlet, page);
@@ -124,6 +126,13 @@ function onAuthenticated(user) {
   state.returnTo = null;
   refreshHealth();
   navigate(target, { replace: true });
+}
+
+function onAccountDeleted() {
+  state.user = null;
+  api.clearCache();
+  navigate("/login");
+  toast("Your account and scan history have been deleted.", { type: "success" });
 }
 
 async function signOut() {
@@ -174,6 +183,7 @@ function userMenu(direction) {
       "div",
       { class: `menu menu-${direction}`, role: "menu" },
       h("div", { class: "menu-head" }, h("strong", { class: "truncate" }, user.full_name || user.username), h("span", { class: "truncate" }, user.email || `@${user.username}`)),
+      h("a", { class: "menu-item", role: "menuitem", href: "#/account", onclick: () => close() }, icon("settings"), "Account settings"),
       h("button", { type: "button", class: "menu-item", role: "menuitem", onclick: signOut }, icon("logout"), "Sign out"),
     );
     wrap.append(menu);

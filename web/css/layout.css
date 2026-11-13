@@ -264,6 +264,10 @@
   min-width: 0;
 }
 
+.page-narrow {
+  max-width: 760px;
+}
+
 .page-head {
   display: flex;
   align-items: flex-end;

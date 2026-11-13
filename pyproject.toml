@@ -8,6 +8,8 @@ authors = [{ name = "musaddiq-vd" }]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Make the package importable without installing it (plain `pytest` in CI).
+pythonpath = ["."]
 addopts = "-q"
 
 [tool.ruff]

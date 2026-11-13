@@ -796,7 +796,7 @@
 
 .contrib-axis-labels {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: var(--zero, 50%) minmax(0, 1fr);
   gap: var(--s-4);
   font-family: var(--font-mono);
   font-size: 0.6875rem;
@@ -813,6 +813,13 @@
 .contrib-axis-labels span:first-child {
   justify-self: end;
 }
+
+/* With bars in one direction only, the other direction's label has no room. */
+.contrib-chart.no-down .axis-down,
+.contrib-chart.no-up .axis-up {
+  visibility: hidden;
+}
+
 
 .contrib-axis-unit {
   text-align: right;
@@ -858,7 +865,7 @@
 .contrib-track::before {
   content: "";
   position: absolute;
-  left: 50%;
+  left: var(--zero, 50%);
   top: -7px;
   bottom: -7px;
   width: 1px;
@@ -873,13 +880,13 @@
 }
 
 .contrib.is-up .contrib-bar {
-  left: 50%;
+  left: var(--zero, 50%);
   border-radius: 0 3px 3px 0;
   background: var(--mal);
 }
 
 .contrib.is-down .contrib-bar {
-  right: 50%;
+  right: calc(100% - var(--zero, 50%));
   border-radius: 3px 0 0 3px;
   background: var(--ben);
 }

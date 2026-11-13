@@ -88,6 +88,36 @@ def delete_session(conn: sqlite3.Connection, token: str) -> None:
     conn.commit()
 
 
+def get_password_hash(conn: sqlite3.Connection, user_id: int) -> str | None:
+    row = conn.execute("SELECT password_hash FROM users WHERE id = ?", (user_id,)).fetchone()
+    return row["password_hash"] if row else None
+
+
+def change_password(
+    conn: sqlite3.Connection, user_id: int, new_password: str, keep_token: str | None
+) -> None:
+    """Store a new password hash and sign the user out everywhere else.
+
+    Every other session is revoked so a stolen cookie stops working the moment
+    the owner changes their password.
+    """
+    conn.execute(
+        "UPDATE users SET password_hash = ? WHERE id = ?",
+        (security.hash_password(new_password), user_id),
+    )
+    keep_hash = security.hash_token(keep_token) if keep_token else ""
+    conn.execute(
+        "DELETE FROM sessions WHERE user_id = ? AND token_hash != ?", (user_id, keep_hash)
+    )
+    conn.commit()
+
+
+def delete_user(conn: sqlite3.Connection, user_id: int) -> None:
+    """Remove the account; sessions and scans go with it via ON DELETE CASCADE."""
+    conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    conn.commit()
+
+
 # --- scans -----------------------------------------------------------------
 
 

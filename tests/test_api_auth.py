@@ -287,3 +287,83 @@ def test_rate_limiter_window_expires(monkeypatch: pytest.MonkeyPatch) -> None:
 
     clock["now"] += 61
     assert limiter.retry_after(key) == 0
+
+
+# --- account management ----------------------------------------------------
+
+
+def test_change_password_requires_current_password(auth_client: TestClient) -> None:
+    response = auth_client.post(
+        "/api/auth/password",
+        json={"current_password": "not-my-password1", "new_password": "brand-new-pass9"},
+    )
+    assert response.status_code == 403
+    assert response.json()["detail"] == "Current password is incorrect"
+    # A wrong current password must not end the session.
+    assert auth_client.get("/api/auth/me").status_code == 200
+
+
+def test_change_password_enforces_policy_and_difference(auth_client: TestClient) -> None:
+    weak = auth_client.post(
+        "/api/auth/password",
+        json={"current_password": DEFAULT_PASSWORD, "new_password": "short"},
+    )
+    assert weak.status_code == 422
+    assert weak.json()["errors"][0]["field"] == "new_password"
+    same = auth_client.post(
+        "/api/auth/password",
+        json={"current_password": DEFAULT_PASSWORD, "new_password": DEFAULT_PASSWORD},
+    )
+    assert same.status_code == 422
+
+
+def test_change_password_revokes_other_sessions(client_factory, auth_client: TestClient) -> None:
+    other_device = client_factory()
+    login = other_device.post(
+        "/api/auth/login", json={"username": "alice", "password": DEFAULT_PASSWORD}
+    )
+    assert login.status_code == 200
+
+    changed = auth_client.post(
+        "/api/auth/password",
+        json={"current_password": DEFAULT_PASSWORD, "new_password": "brand-new-pass9"},
+    )
+    assert changed.status_code == 204
+    assert auth_client.get("/api/auth/me").status_code == 200
+    assert other_device.get("/api/auth/me").status_code == 401
+
+    fresh = client_factory()
+    old = fresh.post("/api/auth/login", json={"username": "alice", "password": DEFAULT_PASSWORD})
+    assert old.status_code == 401
+    new = fresh.post("/api/auth/login", json={"username": "alice", "password": "brand-new-pass9"})
+    assert new.status_code == 200
+
+
+def test_delete_account_requires_password(auth_client: TestClient) -> None:
+    response = auth_client.request("DELETE", "/api/auth/me", json={"password": "wrong-pass-1"})
+    assert response.status_code == 403
+    assert auth_client.get("/api/auth/me").status_code == 200
+
+
+def test_delete_account_removes_user_and_scans(client_factory, auth_client: TestClient) -> None:
+    created = auth_client.post("/api/scans/manual", json={"features": {}})
+    assert created.status_code == 201
+
+    response = auth_client.request("DELETE", "/api/auth/me", json={"password": DEFAULT_PASSWORD})
+    assert response.status_code == 204
+    assert auth_client.get("/api/auth/me").status_code == 401
+
+    fresh = client_factory()
+    login = fresh.post("/api/auth/login", json={"username": "alice", "password": DEFAULT_PASSWORD})
+    assert login.status_code == 401
+    # The username is free again and the new account starts with no history.
+    register_user(fresh, "alice")
+    assert fresh.get("/api/scans").json()["total"] == 0
+
+
+def test_account_endpoints_require_auth(client: TestClient) -> None:
+    change = client.post(
+        "/api/auth/password", json={"current_password": "x", "new_password": "abcdefg1"}
+    )
+    assert change.status_code == 401
+    assert client.request("DELETE", "/api/auth/me", json={"password": "x"}).status_code == 401

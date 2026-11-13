@@ -25,6 +25,17 @@ def clean_text(value: str) -> str:
     return _CONTROL_CHARS.sub("", value).strip()
 
 
+def validate_new_password(value: str) -> str:
+    """The password policy, shared by registration and password changes."""
+    if len(value) < 8:
+        raise ValueError("Password must be at least 8 characters long")
+    if len(value) > MAX_PASSWORD_LENGTH:
+        raise ValueError(f"Password must be at most {MAX_PASSWORD_LENGTH} characters long")
+    if not re.search(r"[A-Za-z]", value) or not re.search(r"\d", value):
+        raise ValueError("Password must contain at least one letter and one digit")
+    return value
+
+
 class RegisterRequest(BaseModel):
     full_name: str
     email: str
@@ -60,13 +71,21 @@ class RegisterRequest(BaseModel):
     @field_validator("password")
     @classmethod
     def _password(cls, value: str) -> str:
-        if len(value) < 8:
-            raise ValueError("Password must be at least 8 characters long")
-        if len(value) > MAX_PASSWORD_LENGTH:
-            raise ValueError(f"Password must be at most {MAX_PASSWORD_LENGTH} characters long")
-        if not re.search(r"[A-Za-z]", value) or not re.search(r"\d", value):
-            raise ValueError("Password must contain at least one letter and one digit")
-        return value
+        return validate_new_password(value)
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def _new_password(cls, value: str) -> str:
+        return validate_new_password(value)
+
+
+class DeleteAccountRequest(BaseModel):
+    password: str
 
 
 class LoginRequest(BaseModel):

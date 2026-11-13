@@ -40,10 +40,33 @@ function hero(scan) {
   );
 }
 
-function contributionRow(c, max) {
+/** Save the full scan (verdict, features, contributions, APK evidence) as JSON. */
+function downloadReport(scan) {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(scan, null, 2)], { type: "application/json" }));
+  const link = h("a", { href: url, download: `maldetect-scan-${scan.id}.json` });
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// Share of the track the bars may use; the rest is padding around the zero line.
+const BAR_SPACE = 92;
+
+/** Place the zero line where the visible bars need it, so a one-sided chart
+ *  does not waste half its width on an empty direction. */
+function contributionScale(rows) {
+  const up = Math.max(0, ...rows.map((c) => c.impact));
+  const down = Math.max(0, ...rows.map((c) => -c.impact));
+  const span = up + down;
+  const zero = span > 0 ? (100 - BAR_SPACE) / 2 + (down / span) * BAR_SPACE : 50;
+  return { span, zero, hasUp: up > 0, hasDown: down > 0 };
+}
+
+function contributionRow(c, span) {
   const up = c.impact > 0;
   const zero = c.impact === 0;
-  const width = max > 0 ? Math.max(zero ? 0 : 1.5, (Math.abs(c.impact) / max) * 50) : 0;
+  const width = span > 0 ? Math.max(zero ? 0 : 1.5, (Math.abs(c.impact) / span) * BAR_SPACE) : 0;
   return h(
     "li",
     {
@@ -61,12 +84,18 @@ function contributionsCard(scan) {
   if (!all.length) {
     return card({ title: "Why this verdict", body: h("p", { class: "muted" }, "No feature contributions were returned for this scan.") });
   }
-  const max = Math.max(...all.map((c) => Math.abs(c.impact)), 0);
   const list = h("ol", { class: "contribs" });
+  const axis = h("div", { class: "contrib-axis", "aria-hidden": "true" }, h("span", null), h("span", { class: "contrib-axis-labels" }, h("span", { class: "axis-down" }, icon("arrow-left"), "Toward benign"), h("span", { class: "axis-up" }, "Toward malicious", icon("arrow-right"))), h("span", { class: "contrib-axis-unit" }, "pts"));
+  const chartEl = h("div", { class: "contrib-chart" }, axis, list);
   let expanded = false;
   const toggle = h("button", { type: "button", class: "btn btn-sm" });
   const paint = () => {
-    mount(list, (expanded ? all : all.slice(0, TOP_N)).map((c) => contributionRow(c, max)));
+    const rows = expanded ? all : all.slice(0, TOP_N);
+    const scale = contributionScale(rows);
+    chartEl.style.setProperty("--zero", `${scale.zero}%`);
+    chartEl.classList.toggle("no-down", !scale.hasDown);
+    chartEl.classList.toggle("no-up", !scale.hasUp);
+    mount(list, rows.map((c) => contributionRow(c, scale.span)));
     toggle.textContent = expanded ? `Show top ${TOP_N}` : `Show all ${all.length}`;
     toggle.setAttribute("aria-expanded", String(expanded));
   };
@@ -95,8 +124,7 @@ function contributionsCard(scan) {
           ".",
         ),
       ),
-      h("div", { class: "contrib-axis", "aria-hidden": "true" }, h("span", null), h("span", { class: "contrib-axis-labels" }, h("span", null, icon("arrow-left"), "Toward benign"), h("span", null, "Toward malicious", icon("arrow-right"))), h("span", { class: "contrib-axis-unit" }, "pts")),
-      list,
+      chartEl,
       all.length > TOP_N ? h("div", { class: "contrib-more" }, toggle) : null,
     ],
   });
@@ -258,7 +286,7 @@ function resultPage(scan, catalog, { navigate }) {
         h("h1", { class: ["page-title", "wrap", !scan.app_name && "is-unnamed"], tabindex: "-1" }, name),
         h("p", { class: "page-sub" }, `${sourceLabel(scan.source)} · ${dateTime(scan.created_at)}`),
       ),
-      h("div", { class: "page-actions" }, h("a", { class: "btn", href: scan.source === "manual" ? "#/scan?mode=manual" : "#/scan" }, icon("scan"), "Scan another"), del),
+      h("div", { class: "page-actions" }, h("a", { class: "btn", href: scan.source === "manual" ? "#/scan?mode=manual" : "#/scan" }, icon("scan"), "Scan another"), h("button", { type: "button", class: "btn", onclick: () => downloadReport(scan) }, icon("download"), "Download report"), del),
     ),
     hero(scan),
     contributionsCard(scan),

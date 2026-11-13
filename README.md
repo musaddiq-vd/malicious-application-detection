@@ -10,7 +10,7 @@
 ![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?logo=scikitlearn&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-162%20passing-2ec4a0)
+![Tests](https://img.shields.io/badge/tests-171%20passing-2ec4a0)
 ![Accuracy](https://img.shields.io/badge/held--out%20accuracy-92.5%25-5ad1e6)
 ![ROC AUC](https://img.shields.io/badge/ROC%20AUC-0.948-5ad1e6)
 
@@ -46,8 +46,9 @@ password storage, and turned a set of scripts into a tested web application.
 | 🔍 **Explainable verdicts** | Model-agnostic contribution scores show how much each feature pushed the probability toward malicious or benign. |
 | 📊 **Analyst dashboard** | Scan activity, verdict split, top malicious indicators, searchable history and a full model-insights page. |
 | 🔐 **Secure by default** | scrypt password hashing, hashed server-side session tokens, login rate limiting, strict CSP and security headers, per-user data isolation. |
+| 👤 **Account control** | Change your password (signs out every other device) or permanently delete your account and scan history. Download any scan as a JSON report. |
 | 🎨 **Polished UI** | Zero-build single-page app: dark and light themes, hand-written SVG charts, responsive down to phone width, keyboard accessible. |
-| ✅ **Tested** | 162 automated tests (ML pipeline, APK parser, REST API), `ruff` lint, GitHub Actions CI, Dockerfile. |
+| ✅ **Tested** | 171 automated tests (ML pipeline, APK parser, REST API), `ruff` lint, GitHub Actions CI, Dockerfile. |
 
 ## 📸 Screenshots
 
@@ -63,6 +64,10 @@ password storage, and turned a set of scripts into a tested web application.
   <tr>
     <td><img src="docs/screenshots/history.png" alt="Scan history" /><p align="center"><sub><b>History</b> — search, filter, paginate</sub></p></td>
     <td><img src="docs/screenshots/dashboard-light.png" alt="Dashboard in light theme" /><p align="center"><sub><b>Light theme</b></sub></p></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/scan-result-light.png" alt="Scan result in light theme" /><p align="center"><sub><b>Scan result</b> — verdict, gauge and explanation</sub></p></td>
+    <td><img src="docs/screenshots/account.png" alt="Account settings" /><p align="center"><sub><b>Account settings</b> — password and data controls</sub></p></td>
   </tr>
 </table>
 
@@ -170,7 +175,7 @@ So the honest headline is lower than the old one — and the new model is genuin
 | Output | A red or green label | Probability, risk level, per-feature explanation, APK evidence |
 | Passwords | Stored in plaintext in a committed database | scrypt hashes, hashed session tokens, rate limiting |
 | App | tkinter windows launching each other via `subprocess`, hardcoded `E:/` paths | FastAPI service + responsive web app, config-driven paths |
-| Quality | No tests | 162 tests, lint, CI, Docker |
+| Quality | No tests | 171 tests, lint, CI, Docker |
 
 ## 🚀 Quick start
 
@@ -237,6 +242,8 @@ login require a session cookie.
 | `GET` | `/api/health` | Service and model status |
 | `POST` | `/api/auth/register` · `/login` · `/logout` | Account and session management |
 | `GET` | `/api/auth/me` | Current user |
+| `POST` | `/api/auth/password` | Change password; revokes all other sessions |
+| `DELETE` | `/api/auth/me` | Delete the account and its scans (password required) |
 | `GET` | `/api/features` · `/api/features/presets` | Feature catalog and example profiles |
 | `POST` | `/api/scans/manual` | Score a hand-described feature profile |
 | `POST` | `/api/scans/apk` | Upload an APK for static analysis and scoring |

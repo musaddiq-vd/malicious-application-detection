@@ -120,6 +120,8 @@ export const api = {
   login: (body) => request("POST", "/auth/login", { body, guard: false }),
   register: (body) => request("POST", "/auth/register", { body, guard: false }),
   logout: () => request("POST", "/auth/logout", { guard: false }),
+  changePassword: (body) => request("POST", "/auth/password", { body }),
+  deleteAccount: (body) => request("DELETE", "/auth/me", { body }),
   features: () => cached("features", () => request("GET", "/features")),
   presets: () => cached("presets", () => request("GET", "/features/presets")),
   metrics: () => cached("metrics", () => request("GET", "/model/metrics")),

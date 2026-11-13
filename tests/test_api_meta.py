@@ -20,6 +20,8 @@ from maldetect.api.app import create_app
 PROTECTED_ROUTES = [
     ("GET", "/api/auth/me"),
     ("POST", "/api/auth/logout"),
+    ("POST", "/api/auth/password"),
+    ("DELETE", "/api/auth/me"),
     ("GET", "/api/features"),
     ("GET", "/api/features/presets"),
     ("GET", "/api/model/metrics"),
@@ -323,3 +325,19 @@ def test_manual_scan_with_the_real_model(db_file: Path) -> None:
             assert impacts == sorted(impacts, reverse=True)
 
         assert client.get("/api/stats").json()["total_scans"] == len(presets)
+
+
+def test_unhandled_error_returns_json_500_with_security_headers(
+    app: FastAPI, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def boom(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("database exploded")
+
+    monkeypatch.setattr("maldetect.api.store.compute_stats", boom)
+    with TestClient(app, raise_server_exceptions=False) as client:
+        register_user(client, "erin")
+        response = client.get("/api/stats")
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Internal server error"}
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert "content-security-policy" in response.headers

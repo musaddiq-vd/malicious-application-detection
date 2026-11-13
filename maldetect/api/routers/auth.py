@@ -10,11 +10,18 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 from maldetect import config
 from maldetect.api import security, store
 from maldetect.api.deps import CurrentUser, Database
-from maldetect.api.schemas import LoginRequest, RegisterRequest, UserEnvelope
+from maldetect.api.schemas import (
+    ChangePasswordRequest,
+    DeleteAccountRequest,
+    LoginRequest,
+    RegisterRequest,
+    UserEnvelope,
+)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 INVALID_CREDENTIALS = "Invalid username or password"
+WRONG_PASSWORD = "Current password is incorrect"
 
 
 def _start_session(response: Response, conn: sqlite3.Connection, user_id: int) -> None:
@@ -109,3 +116,56 @@ def logout(request: Request, user: CurrentUser, conn: Database) -> Response:
 @router.get("/me", response_model=UserEnvelope)
 def me(user: CurrentUser) -> dict[str, Any]:
     return {"user": user}
+
+
+def _require_password(
+    request: Request, conn: sqlite3.Connection, user: dict[str, Any], password: str
+) -> None:
+    """Re-authenticate before a sensitive account change.
+
+    Shares the login limiter so a hijacked session cannot be used to guess the
+    password without limit.
+    """
+    limiter: security.LoginRateLimiter = request.app.state.login_limiter
+    client_ip = request.client.host if request.client else "unknown"
+    key = limiter.key(user["username"], client_ip)
+    retry_after = limiter.retry_after(key)
+    if retry_after:
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            f"Too many failed attempts. Try again in {retry_after} seconds.",
+            headers={"Retry-After": str(retry_after)},
+        )
+    stored = store.get_password_hash(conn, user["id"])
+    if stored is None or not security.verify_password(password, stored):
+        limiter.record_failure(key)
+        # 403, not 401: the session is valid, so the client must not sign the user out.
+        raise HTTPException(status.HTTP_403_FORBIDDEN, WRONG_PASSWORD)
+    limiter.reset(key)
+
+
+@router.post("/password", status_code=status.HTTP_204_NO_CONTENT)
+def change_password(
+    payload: ChangePasswordRequest, request: Request, user: CurrentUser, conn: Database
+) -> Response:
+    _require_password(request, conn, user, payload.current_password)
+    if payload.new_password == payload.current_password:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "New password must be different from the current one",
+        )
+    store.change_password(
+        conn, user["id"], payload.new_password, request.cookies.get(security.SESSION_COOKIE)
+    )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+def delete_account(
+    payload: DeleteAccountRequest, request: Request, user: CurrentUser, conn: Database
+) -> Response:
+    _require_password(request, conn, user, payload.password)
+    store.delete_user(conn, user["id"])
+    response = Response(status_code=status.HTTP_204_NO_CONTENT)
+    _clear_cookie(response)
+    return response
